@@ -1,4 +1,6 @@
 // kd6ctl is a command line utility for configuring the KD6RMX contact image sensor.
+// Package main provides a command line interface for configuring the KD6RMX contact image sensor.
+// It includes subcommands for handling version, load, save, pattern, output frequency, output format, interpolation, dark correction, white correction, LED control, duty cycle, illumination period, gain control, register dumping, and sending commands to the sensor.
 
 package main
 
@@ -13,7 +15,7 @@ import (
 	"github.com/peterbourgon/ff/v3/ffcli"
 )
 
-func main() {
+func runKD6CTL() {
 	var (
 		rootFlagSet = flag.NewFlagSet("kd6ctl", flag.ExitOnError)
 		port        = rootFlagSet.String("p", "/dev/corser/XtiumCLMX41_s0", "port of KD6RMX sensor to use")
@@ -25,7 +27,9 @@ func main() {
 		Name:       "version",
 		ShortUsage: "kd6ctl version",
 		ShortHelp:  "Show version of kd6ctl API.",
-		Exec: func(_ context.Context, args []string) error {
+		Exec: func(ctx context.Context, args []string) error {
+					log := log.New(os.Stderr, "kd6ctl: ", log.LstdFlags)
+					defer log.Print("Done")
 			fmt.Println(kd6rmx.Version)
 			return nil
 		},
@@ -416,7 +420,7 @@ func main() {
 		FlagSet:     rootFlagSet,
 		Subcommands: []*ffcli.Command{version, dumpreg, gain, load, save, pattern, outputfreq, outputfmt, interp, dark, white, leds, duty, illum, cmd},
 		Exec: func(context.Context, []string) error {
-			return flag.ErrHelp
+			return runTests
 		},
 	}
 
